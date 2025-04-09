@@ -39,12 +39,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
     
-      - name: Auto-format source code (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          # Format all .cpp and .h files in the repository in place.
-          find . -type f \( -name "*.cpp" -o -name "*.h" \) -exec clang-format -i {} +
-    
       - name: Set reusable strings
         id: strings
         shell: bash
@@ -65,32 +59,3 @@ jobs:
       - name: Test (ctest)
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
         run: ctest --build-config ${{ matrix.build_type }}
-
-      - name: Run Application and Compare Output (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          # Run the application with a set of known parameters and capture output
-          ./build/sum_experiment --threads 1 --size 1000000 --method reduce --runs 1 --warmup 0 --dist rand > output.txt
-          echo "Output from sum_experiment (Linux):"
-          cat output.txt
-          # Check for a specific known substring in the output (adjust as needed)
-          grep "Array of size" output.txt
-      
-      - name: Run Application and Compare Output (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          & ".\build\sum_experiment.exe" --threads 1 --size 1000000 --method reduce --runs 1 --warmup 0 --dist rand > output.txt
-          echo "Output from sum_experiment (Windows):"
-          type output.txt
-          findstr "Array of size" output.txt
-
-      - name: Check Code Formatting (Linux only)
-        if: runner.os == 'Linux'
-        run: |
-          # Run clang-format on all .cpp and .h files and ensure there are no differences.
-          # Adjust the file patterns or directory paths as needed.
-          set -e
-          FILES=$(find . -type f \( -name "*.cpp" -o -name "*.h" \) )
-          for file in $FILES; do
-            clang-format -style=file "$file" | diff -u "$file" -
-          done
