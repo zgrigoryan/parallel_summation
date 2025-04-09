@@ -38,13 +38,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
+    
+      - name: Auto-format source code
+        if: runner.os == 'Linux'
+        run: |
+          find . -type f \( -name "*.cpp" -o -name "*.h" \) -exec clang-format -i {} +
+    
       - name: Set reusable strings
         id: strings
         shell: bash
         run: |
           echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-
+    
       - name: Configure CMake
         run: >
           cmake -B ${{ steps.strings.outputs.build-output-dir }}
@@ -69,11 +74,11 @@ jobs:
           cat output.txt
           # Check for a specific known substring in the output (adjust as needed)
           grep "Array of size" output.txt
-
+      
       - name: Run Application and Compare Output (Windows)
         if: runner.os == 'Windows'
         run: |
-          build\sum_experiment.exe --threads 1 --size 1000000 --method reduce --runs 1 --warmup 0 --dist rand > output.txt
+          .\build\sum_experiment.exe --threads 1 --size 1000000 --method reduce --runs 1 --warmup 0 --dist rand > output.txt
           echo "Output from sum_experiment (Windows):"
           type output.txt
           findstr "Array of size" output.txt
