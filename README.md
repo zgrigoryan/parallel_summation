@@ -154,7 +154,7 @@ Results written to results.csv
 Additionally, the Python script processes this CSV data and generates a visualization. Below is an example of what the visualized plot might look like:
 
 
-The above chart [results.png](results.png) is a bar graph that shows the average execution time (in ms) for each summation method and thread count, providing a clear comparison of performance scalability.
+The above chart ![Benchmark Results](results.png) is a bar graph that shows the average execution time (in ms) for each summation method and thread count, providing a clear comparison of performance scalability.
 
 
 ## Visualizing the Results
