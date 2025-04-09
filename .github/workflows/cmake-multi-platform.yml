@@ -39,9 +39,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
     
-      - name: Auto-format source code
+      - name: Auto-format source code (Linux)
         if: runner.os == 'Linux'
         run: |
+          # Format all .cpp and .h files in the repository in place.
           find . -type f \( -name "*.cpp" -o -name "*.h" \) -exec clang-format -i {} +
     
       - name: Set reusable strings
@@ -78,7 +79,7 @@ jobs:
       - name: Run Application and Compare Output (Windows)
         if: runner.os == 'Windows'
         run: |
-          .\build\sum_experiment.exe --threads 1 --size 1000000 --method reduce --runs 1 --warmup 0 --dist rand > output.txt
+          & ".\build\sum_experiment.exe" --threads 1 --size 1000000 --method reduce --runs 1 --warmup 0 --dist rand > output.txt
           echo "Output from sum_experiment (Windows):"
           type output.txt
           findstr "Array of size" output.txt
