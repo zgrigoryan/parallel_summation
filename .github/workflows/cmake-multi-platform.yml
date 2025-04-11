@@ -59,3 +59,28 @@ jobs:
       - name: Test (ctest)
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
         run: ctest --build-config ${{ matrix.build_type }}
+        
+      - name: Run Executable
+        shell: bash
+        working-directory: ${{ steps.strings.outputs.build-output-dir }}
+        run: |
+          echo "Running benchmark tests..."
+  
+          executable_name="sum_experiment"
+  
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            executable_name="sum_experiment.exe"
+            executable_path="Release/$executable_name"  # Windows binary is in Release/
+          else
+            executable_path="./$executable_name"  # Linux/macOS binary
+          fi
+  
+          # Check if the executable exists before running
+          echo "Checking if executable exists: $executable_path"
+          if [ -f "$executable_path" ]; then
+            echo "Executable found, running it..."
+            "$executable_path" --threads 1 --size 1000000 --method reduce --runs 1 --warmup 0 --dist rand
+          else
+            echo "Error: Executable not found at $executable_path"
+            exit 1
+          fi
